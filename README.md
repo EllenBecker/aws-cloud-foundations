@@ -32,16 +32,15 @@ Cada instância EC2 pertence a uma “família”, e cada uma possui um propósi
   - Aumentar a capacidade da mesma instância: mais vCPUs, memória RAM, IOPS, throughput de rede ou storage (bancos de dados monolíticos, aplicações que exigem mais poder de uma única máquina).
 Usar escalabilidade horizontal sempre que possível (mais resiliente e escalável).
 
-## Integração com Outros Serviços
+## Comum integração com os seguintes serviços:
 
+- IAM → controle de acesso e permissões.
 - EBS → armazenamento em blocos persistente.
 - S3 → armazenamento de snapshots e backups.
-- Auto Scaling → cria ou remove instâncias automaticamente.
-- IAM → controle de acesso e permissões.
 
 ----
 
-# 🖼️ AMI - Amazon Machine Image
+# 🖼️  AMI - Amazon Machine Image
 
 Imagem de máquina virtual pré-configurada.
 A mesma AMI pode ser usada para lançar múltiplas instâncias EC2.
@@ -51,7 +50,7 @@ Existem diversas AMIs públicas (Amazon Linux, Ubuntu, Windows, etc.), mas tamb�
 
 ----
 
-# 💾 EBS - Elastic Block Store
+# 🗃️ EBS - Elastic Block Store
 
 Serviço de armazenamento em blocos anexado ao EC2 (como se fosse um HD/SSD externo).
 Persistente (não perde dados ao desligar a instância).
