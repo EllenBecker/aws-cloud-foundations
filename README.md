@@ -98,3 +98,26 @@ Usado para armazenar imagens, vídeos, backups, dados de análise e conteúdo es
 
 Exemplo de uso: logs antigos podem ser movidos para Glacier, enquanto arquivos acessados diariamente ficam em Standard.
 
+---- 
+## Desafio do módulo 'Gerenciando Instâncias EC2 na AWS'
+
+Esse desafio consiste em criar um diagrama no draw.io com um caso de uso de nossa escolha, seguindo os ensinamentos e demonstrações vistas em aula.
+
+Para concluir esse desafio separei ele nas seguintes etapas:
+
+1. Definição do caso de uso.
+    - O objetivo do sistema é coletar, armazenar e manter registros de logs de uma aplicação crítica, garantindo rastreabilidade, auditoria e possibilidade de recuperação em caso de falhas.
+3. Definição do escopo geral da solução utilizando serviços da AWS.
+    - EC2 → instância principal para processamento e armazenamento temporário dos logs.
+    - EBS → volume de armazenamento persistente atrelado à EC2, garantindo durabilidade dos dados mesmo se a instância for reiniciada.
+    - Lambda → função serverless responsável por automatizar o backup diário do EBS para o S3.
+    - S3 → recebe os snapshots para backup seguro e durável.
+5. Definição da 'familia' de instâncias EC2.
+    - Família escolhida: General Purpose. Em geral as instancias dessa familia possuem equilíbrio entre CPU, memória e rede. Alem de que são compatíveis com diferentes tipos de storage e snapshots, facilitando backup e manutenção do sistema de logs.
+6. Definição da instancia com base no seu proposito.
+    - Instância escolhida: m6i.large (2 vCPUs, 8 GB RAM). Capacidade suficiente para processar e armazenar logs de um sistema de médio porte, possui um custo-benefício equilibrado e permite crescimento vertical ou horizontal futuro, caso o volume de logs aumente.
+7. Montagem do diagrama com a representação do fluxo.
+    <img width="943" height="448" alt="image" src="https://github.com/user-attachments/assets/4a55a1d9-e1f8-41a5-81c4-042a8062e0fb" />
+
+
+
