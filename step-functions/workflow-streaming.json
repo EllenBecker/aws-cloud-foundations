@@ -1,0 +1,147 @@
+{
+  "Comment": "Workflow de processamento de mídia com AWS Step Functions + MediaConvert + DynamoDB + SNS",
+  "Version": "1.0",
+  "StartAt": "ExtrairMetadados",
+  "States": {
+    "ExtrairMetadados": {
+      "Type": "Task",
+      "Comment": "Extrai metadados do arquivo (tipo, tamanho, duração, etc.)",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload": {
+          "bucket.$": "$.detail.bucket.name",
+          "key.$": "$.detail.object.key"
+        },
+        "FunctionName.$": "$.LambdaProcessExtrationMediaArn"
+      },
+      "TimeoutSeconds": 60,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotificarFalha"
+        }
+      ],
+      "Next": "ProcessarMidia"
+    },
+    "ProcessarMidia": {
+      "Type": "Task",
+      "Comment": "Inicia job de processamento (MediaConvert ou FFmpeg)",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload": {
+          "bucket.$": "$.bucket",
+          "key.$": "$.key",
+          "metadata.$": "$"
+        },
+        "FunctionName.$": "$.LambdaProcessMediaArn"
+      },
+      "TimeoutSeconds": 60,
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "IntervalSeconds": 5,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotificarFalha"
+        }
+      ],
+      "Next": "AtualizarDynamoDB"
+    },
+    "AtualizarDynamoDB": {
+      "Type": "Task",
+      "Comment": "Atualiza status e resultado do processamento no DynamoDB",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "streaming-processed-files",
+        "Item": {
+          "pk": {
+            "S.$": "States.Format('JOB#{}', $.jobId)"
+          },
+          "bucket": {
+            "S.$": "$.bucket"
+          },
+          "key": {
+            "S.$": "$.key"
+          },
+          "status": {
+            "S": "COMPLETED"
+          },
+          "result": {
+            "S.$": "States.JsonToString($)"
+          },
+          "updatedAt": {
+            "S.$": "$$.State.EnteredTime"
+          }
+        }
+      },
+      "ResultPath": "$.ddbPut",
+      "TimeoutSeconds": 60,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "ResultPath": "$.error",
+          "Next": "NotificarFalha"
+        }
+      ],
+      "Next": "NotificarSucesso"
+    },
+    "NotificarSucesso": {
+      "Type": "Task",
+      "Comment": "Publica mensagem de sucesso no SNS",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:************:workflow-streaming-sucess",
+        "Message.$": "$",
+        "Subject": "Processamento de mídia concluído com sucesso"
+      },
+      "Next": "FimSucesso"
+    },
+    "NotificarFalha": {
+      "Type": "Task",
+      "Comment": "Publica mensagem de falha no SNS",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:************:workflow-streaming-failure",
+        "Message.$": "$",
+        "Subject": "Falha no processamento de mídia"
+      },
+      "Next": "FimFalha"
+    },
+    "FimSucesso": {
+      "Type": "Succeed",
+      "Comment": "Workflow concluído com sucesso"
+    },
+    "FimFalha": {
+      "Type": "Fail",
+      "Comment": "Workflow encerrado com erro",
+      "Error": "MediaProcessingFailed"
+    }
+  }
+}
