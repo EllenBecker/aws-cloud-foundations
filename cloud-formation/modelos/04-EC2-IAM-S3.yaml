@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Criar instancia EC2, configurar Security Group para acesso SSH, criar bucket S3, criar usuário e grupo IAM.
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: EC2 instance type
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - c7i-flex.large
+      - m7i-flex.large
+    ConstraintDescription: Deve ser um tipo de instância EC2 válido.
+
+Resources:
+  S3Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: 3-bucket-s3-cloud-formation
+
+  IAMGroup:
+    Type: "AWS::IAM::Group"
+    Properties:
+      GroupName: GPO-ADMIN-CLOUD-FORMATION
+
+  IAMUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: admin.cloud.formation
+
+  IAMUserToGroupAddition:
+    Type: "AWS::IAM::UserToGroupAddition"
+    Properties:
+      GroupName: !Ref IAMGroup
+      Users:
+        - !Ref IAMUser
+
+  EC2Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: !Ref InstanceType
+      AvailabilityZone: us-east-1a
+      ImageId: ami-0c2b8ca1dad447f8a
+      KeyName: EC2_keys
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update
+          apt-get install -y python3-pip
+
+  EC2SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Permitir acesso SSH
+      VpcId: vpc-******************
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: "22"
+          ToPort: "22"
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  InstanceId:
+    Description: ID da instância criada
+    Value: !Ref EC2Instance
+
+  InstancePublicIP:
+    Description: IP público da instância
+    Value: !GetAtt EC2Instance.PublicIp
+
+  S3BucketName:
+    Description: Nome do bucket S3 criado
+    Value: !Ref S3Bucket
+
+  IAMUserName:
+    Description: Nome do usuário IAM criado
+    Value: !Ref IAMUser
