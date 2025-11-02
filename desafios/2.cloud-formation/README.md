@@ -1,7 +1,7 @@
 <div align="center">
   <h1>🚀 Desafio AWS CloudFormation</h1>
   <p>
-    💡 Readme desenvolvido com o objetivo de demonstrar conhecimento prático na criação e automação de recursos AWS por meio do <strong>CloudFormation</strong>.
+    💡 Demonstrar conhecimento prático na criação e automação de recursos AWS por meio do <strong>CloudFormation</strong>.
   </p>
 </div>
 
@@ -15,17 +15,17 @@ Com ele, é possível:
 - Controlar versões de infraestruturas, permitindo rastreabilidade e consistência;
 - Automatizar implantações complexas sem necessidade de configuração manual.
 
-O CloudFormation não possui custo adicional pela utilização ou criação de templates, você paga apenas pelos recursos criados pelas stacks (como EC2, S3, IAM, etc.).
+O CloudFormation **não possui custo adicional** pela utilização ou criação de templates, você paga apenas pelos recursos criados pelas stacks (como EC2, S3, IAM, etc.).
 
 ## Como funciona na pratica
 
 O fluxo básico de uso do CloudFormation é:
 
-![image.png](images/cloud-formation-flow.png)
+![image.png](imagens/cloud-formation-flow.png)
 
 1. Criação do template;
 2. Executação no CloudFormation;
-3. Resulta na stack criada;
+3. Resulta na stack criada.
 
 Cada stack representa uma instância funcional do seu template, a stack pode ser criada, atualizada ou deletada com segurança, mantendo controle total sobre a infraestrutura.
 
@@ -42,7 +42,7 @@ Cada stack representa uma instância funcional do seu template, a stack pode ser
 # 🚀 Desafio
 
 O desafio teve como foco **implementar stacks automatizadas** utilizando **AWS CloudFormation**, demonstrando domínio prático sobre a criação, configuração e interconexão de recursos na nuvem AWS.
-Os exemplos foram desenvolvidos de forma gradual, partindo de uma simples instância EC2 até a criação de uma infraestrutura mais completa com EC2 + Security Group + IAM + S3.
+Os exemplos foram **desenvolvidos de forma gradual**, partindo de uma simples instância EC2 até a criação de uma infraestrutura mais completa com EC2 + Security Group + IAM + S3.
 
 ---
 
@@ -66,7 +66,7 @@ Resources:
           Value: "EC2"
 ```
 
-![Tabela de logs do exemplo 1](images/create-EC2-logs.png)
+![Tabela de logs do exemplo 1](imagens/create-EC2-logs.png)
 
 ### 2. EC2 com instalação automática do Apache
 
@@ -93,7 +93,7 @@ Resources:
           echo "<h1>OLA AWS FOUNDATIONS do $(hostname -f)</h1>" > /var/www/html/index.html
 ```
 
-![Tabela de logs do exemplo 2](images/create-EC2-apache-logs.png)
+![Tabela de logs do exemplo 2](imagens/create-EC2-apache-logs.png)
 
 ### 3. EC2 + Apache + Security Group (Firewall)
 
@@ -132,9 +132,9 @@ Resources:
           CidrIp: 0.0.0.0/0
 ```
 
-![Tabela de logs do exemplo 3](images/create-EC2-SG-logs-table.png)
-![Linha do tempo do exemplo 3](images/create-EC2-SG-logs-timeline.png)
-![Visualização no Infrastructure Composer do exemplo 3](images/create-EC2-SG-composer.png)
+![Tabela de logs do exemplo 3](imagens/create-EC2-SG-logs-table.png)
+![Linha do tempo do exemplo 3](imagens/create-EC2-SG-logs-timeline.png)
+![Visualização no Infrastructure Composer do exemplo 3](imagens/create-EC2-SG-composer.png)
 
 ### 4. EC2 + IAM + S3 + Security Group (Firewall)
 
@@ -222,9 +222,9 @@ Outputs:
     Value: !Ref IAMUser
 ```
 
-![Tabela de logs do exemplo 4](images/create-EC2-IAM-S3-logs-table.png)
-![Linha do tempo do exemplo 4](images/create-EC2-IAM-S3-logs-timeline.png)
-![Visualização no Infrastructure Composer do exemplo 4](images/create-EC2-IAM-S3-composer.png)
+![Tabela de logs do exemplo 4](imagens/create-EC2-IAM-S3-logs-table.png)
+![Linha do tempo do exemplo 4](imagens/create-EC2-IAM-S3-logs-timeline.png)
+![Visualização no Infrastructure Composer do exemplo 4](imagens/create-EC2-IAM-S3-composer.png)
 
 # Conclusão
 
